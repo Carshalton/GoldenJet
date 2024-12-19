@@ -4,8 +4,8 @@ from PIL import Image
 # Dummy credentials (use a secure method for production)
 USER_CREDENTIALS = {
     "Ethan": "password",
-    "Kalrav": "password",
-    "Leo": "password",
+    "William": "password",
+    "guest": "password",
 }
 
 def initialize_session_state():
