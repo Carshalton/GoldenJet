@@ -20,8 +20,10 @@ def initialize_session_state():
         st.session_state["username"] = None
 
 def login():
-    """Handles the login functionality."""
-    st.title("Login Page")
+    image = Image.open("GJLogo.png")  # Replace with your actual image file path if different
+    st.image(image, caption="", use_container_width=True)
+    st.title("Welcome to Golden Jet!")
+    st.title("Please login")
 
     # Login input fields
     username = st.text_input("Username", value=st.session_state["username_input"])
@@ -44,6 +46,13 @@ def home():
     image = Image.open("GJLogo.png")  # Replace with your actual image file path if different
     st.image(image, caption="", use_container_width=True)
     st.title(f"Welcome back, {st.session_state['username']}! 👋😄")
+
+    sentiment={"one","two","three","four","five"}
+    select=st.feedback("stars")
+    if select is not None:
+        st.markdown(f"You have selected {select+1} stars")
+
+
     
 
 def main():
