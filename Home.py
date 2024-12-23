@@ -22,8 +22,32 @@ def initialize_session_state():
 def login():
     image = Image.open("GJLogo.png")  # Replace with your actual image file path if different
     st.image(image, caption="", use_container_width=True)
-    st.title("Welcome to Golden Jet!")
-    st.title("Please login")
+    st.markdown(
+        """
+        <style>
+        .custom-title {
+            color: #FFB500;
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .custom-subheader {
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Create columns with custom widths
+    col1, col2, col3 = st.columns([0.5, 4, 0.5])  # Side columns are narrow, middle column is wider
+
+    with col2:  # Middle column
+        st.markdown('<h1 class="custom-title">Welcome to Golden Jet!</h1>', unsafe_allow_html=True)
+        st.markdown('<h3 class="custom-subheader">Please Login Below</h3>', unsafe_allow_html=True)
 
     # Login input fields
     username = st.text_input("Username", value=st.session_state["username_input"])
@@ -47,13 +71,12 @@ def home():
     st.image(image, caption="", use_container_width=True)
     st.title(f"Welcome back, {st.session_state['username']}! 👋😄")
 
-    sentiment={"one","two","three","four","five"}
-    select=st.feedback("stars")
-    if select is not None:
-        st.markdown(f"You have selected {select+1} stars")
+    # Rating system (replacing the incorrect st.feedback)
+    sentiment_options = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"]
+    select = st.selectbox("Rate your experience", options=sentiment_options)
+    if select:
+        st.markdown(f"You have selected: {select}")
 
-
-    
 
 def main():
     """Main function to control app flow."""
