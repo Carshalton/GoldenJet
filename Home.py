@@ -2,6 +2,9 @@ import streamlit as st
 from PIL import Image
 import json
 import bcrypt
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Load credentials from JSON
 def load_credentials(file_path="users.json"):
@@ -32,6 +35,48 @@ def initialize_session_state():
         st.session_state["username"] = None
     if "login_clicked" not in st.session_state:
         st.session_state["login_clicked"] = False
+    if "receiver_email" not in st.session_state:
+        st.session_state.receiver_email = ""
+    if "display_name" not in st.session_state:
+        st.session_state.display_name = ""
+    if "email_subject" not in st.session_state:
+        st.session_state.email_subject = ""
+    if "main_text" not in st.session_state:
+        st.session_state.main_text = ""
+    if "error_message" not in st.session_state:
+        st.session_state.error_message = None
+    if "email_sent" not in st.session_state:
+        st.session_state.email_sent = False
+
+# Function to reset email fields
+def reset_email_fields():
+    st.session_state.receiver_email = ""
+    st.session_state.display_name = ""
+    st.session_state.email_subject = ""
+    st.session_state.main_text = ""
+    st.session_state.error_message = None
+    st.session_state.email_sent = False
+
+# Function to send email
+def send_email(sender_email, password, receiver_email, display_name, email_subject, main_text):
+    try:
+        # Create email
+        msg = MIMEMultipart()
+        msg["From"] = f"{display_name} <{sender_email}>"
+        msg["To"] = receiver_email
+        msg["Subject"] = email_subject
+        msg.attach(MIMEText(main_text, "plain"))
+
+        # Connect to SMTP server and send email
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, password)
+            server.send_message(msg)
+
+        st.session_state.email_sent = True
+        st.session_state.error_message = None
+    except Exception as e:
+        st.session_state.error_message = str(e)
 
 # Login page
 def login():
@@ -84,6 +129,34 @@ def home():
     # Display user email
     email = credentials[st.session_state["username"]]["email"]
     st.markdown(f"**Email:** {email}")
+
+    if st.session_state["username"] == "Ethan":
+        with st.expander("Send an email"):
+            st.text_input("Send to", key="receiver_email")
+            st.text_input("Display name", key="display_name")
+            st.text_input("Subject", key="email_subject")
+            st.text_area("Main text", key="main_text")
+
+            if st.button("Send"):
+                if not st.session_state.receiver_email or not st.session_state.display_name or not st.session_state.email_subject or not st.session_state.main_text:
+                    st.session_state.error_message = "All fields are required!"
+                else:
+                    sender_email = "ethan.geng2001@gmail.com"
+                    password = "awdwlsdtmprstxus"  # App Password
+                    send_email(
+                        sender_email,
+                        password,
+                        st.session_state.receiver_email,
+                        st.session_state.display_name,
+                        st.session_state.email_subject,
+                        st.session_state.main_text,
+                    )
+
+            if st.session_state.email_sent:
+                st.success("Email sent successfully!")
+                reset_email_fields()
+            elif st.session_state.error_message:
+                st.error(st.session_state.error_message)
 
     if st.button("Logout"):
         # Clear session state variables and return to login
