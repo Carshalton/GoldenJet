@@ -4,11 +4,11 @@
         "email": "Geng-E-27@kcs.org.uk"
     },
     "William": {
-        "password": "$2b$12$gYKtm1hVbgDQHz/jQpzXuOwRlUXqJnKCMHIhuA4O5OUaWox.JJu4G",
+        "password": "$2b$12$Qc2NagD5PIdO1Dpvl44yA.cAXXXgYqipqEqy4J1wGMeSnXyUHFMk",
         "email": "Zhu-W-27@kcs.org.uk"
     },
     "guest": {
-        "password": "$2b$12$f1bfTV9JMd/R1.R/GihXuucSDUEFMoL4dMR1DTjB23uYSv8ZcKb8u",
+        "password": "$2b$12$Qc2NagD5PIdO1Dpvl44yA.cAXXXgYqipqEqy4J1wGMeSnXyUHFMk",
         "email": "notfound@example.com"
     }
 }
