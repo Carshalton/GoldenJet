@@ -167,6 +167,8 @@ def home():
     select = st.selectbox("Rate your experience", options=sentiment_options)
     if select:
         st.markdown(f"You have selected: {select}")
+        
+    st.markdown('<a href="goldenjet.azurewebsites.net" target="_blank">Peak Times, click here to go to Golden Jet Website if slow</a>', unsafe_allow_html=True)
 
 # Version footer
 def display_version():
