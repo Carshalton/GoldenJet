@@ -1,4 +1,10 @@
 import streamlit as st
+
+# Authentication check: Only allow logged-in users to access this page.
+if not st.session_state.get("logged_in", False):
+    st.warning("You must be logged in to view this page")
+    st.stop()
+
 from openai import AzureOpenAI
 
 # Set up the Azure OpenAI client
