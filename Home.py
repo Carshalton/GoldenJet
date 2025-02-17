@@ -47,6 +47,9 @@ def initialize_session_state():
         st.session_state.error_message = None
     if "email_sent" not in st.session_state:
         st.session_state.email_sent = False
+    # Set default profile picture (SAS URL pointing to a default image)
+    if "profile_pic" not in st.session_state:
+        st.session_state["profile_pic"] = "https://goldenjet0811569056.blob.core.windows.net/profilepics/default_profile.png?sp=r&st=2025-02-17T10:09:50Z&se=2026-01-10T18:09:50Z&spr=https&sv=2022-11-02&sr=c&sig=hkTe6YLkhVapk7GM8ZEcmO7DMwFFcaDKYSfZFEZaoM8%3D"
 
 # Function to reset email fields
 def reset_email_fields():
@@ -109,15 +112,20 @@ def login():
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Login"):
-            if verify_login(username, password):
-                st.session_state["logged_in"] = True
-                st.session_state["username"] = username
-                st.success(f"Login successful! Welcome, {username}.")
-            else:
-                st.error("Invalid username or password")
+    if st.button("Login"):
+        if verify_login(username, password):
+            st.session_state["logged_in"] = True
+            st.session_state["username"] = username
+            # Set the profile picture URL using your Azure Blob SAS URL.
+            # This assumes your blob container has images named like 'Ethan.png' for each user.
+            st.session_state["profile_pic"] = (
+                f"https://goldenjet0811569056.blob.core.windows.net/profilepics/{username}.png"
+                "?sp=r&st=2025-02-17T10:09:50Z&se=2026-01-10T18:09:50Z"
+                "&spr=https&sv=2022-11-02&sr=c&sig=hkTe6YLkhVapk7GM8ZEcmO7DMwFFcaDKYSfZFEZaoM8%3D"
+            )
+            st.success(f"Login successful! Welcome, {username}.")
+        else:
+            st.error("Invalid username or password")
 
 # Home page
 def home():
@@ -168,7 +176,10 @@ def home():
     if select:
         st.markdown(f"You have selected: {select}")
         
-    st.markdown('<a href="goldenjet.azurewebsites.net" target="_blank">Peak Times, click here to go to Golden Jet Website if slow</a>', unsafe_allow_html=True)
+    st.markdown(
+        '<a href="goldenjet.azurewebsites.net" target="_blank">During Peak Times, click here to go to Golden Jet Auxiliary Website if slow</a>', 
+        unsafe_allow_html=True
+    )
 
 # Version footer
 def display_version():
@@ -177,6 +188,42 @@ def display_version():
         f"<div style='position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: grey;'>Version: {version}</div>",
         unsafe_allow_html=True,
     )
+
+# Display user info in the sidebar (bottom left)
+def display_user_info():
+    if st.session_state.get("logged_in", False):
+        username = st.session_state.get("username", "Unknown User")
+        # Use the SAS URL from session state (which points to Azure Blob Storage)
+        profile_image_url = st.session_state.get("profile_pic", "")
+        st.sidebar.markdown(
+            f"""
+            <style>
+            .user-info {{
+                position: fixed;
+                bottom: 10px;
+                left: 10px;
+                display: flex;
+                align-items: center;
+                background-color: #f9f9f9;
+                padding: 5px 10px;
+                border-radius: 8px;
+                box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+            }}
+            .user-info img {{
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-right: 10px;
+            }}
+            </style>
+            <div class="user-info">
+                <img src="{profile_image_url}" alt="Profile Picture">
+                <span>{username}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 # Main function
 def main():
@@ -188,8 +235,10 @@ def main():
     else:
         home()
 
-    # Display version in the bottom right corner
+    # Display version in the bottom right corner.
     display_version()
+    # Display logged in user's info in the bottom left corner.
+    display_user_info()
 
 if __name__ == "__main__":
     main()
